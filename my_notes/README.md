@@ -24,6 +24,7 @@ notebook（已适配本机：DeepSeek / 中转站 Gemini / 本地 Qwen）。
 | [annotation_convention.md](annotation_convention.md) | 注释规范：`★ 本章新增` / `（ChN）` / `【适配】`，以及"三种载体各放什么" |
 | [ros_multiagent_protocol_notes.md](ros_multiagent_protocol_notes.md) | 设计备忘：用 ROS/ROS2 做多 agent 通信中间件（初步想法，待验证） |
 | [ROADMAP.md](ROADMAP.md) | 学习路线图：全书进度、各章产出、环境与踩坑记录 |
+| [labs_study_plan.md](labs_study_plan.md) | 实验（lab）学习计划：顺序、每节内容、精华路线 |
 
 ## 阅读顺序建议
 
