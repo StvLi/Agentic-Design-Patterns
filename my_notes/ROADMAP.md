@@ -536,6 +536,43 @@ agentic_design_patterns/
 
 ## 故障排查（实战踩坑记录）
 
+### ⓪ ADK 的 "Event loop is closed" 噪音（已修复）
+
+跑任何 ADK notebook（Ch2 / Ch4 / Ch5 / Ch7）时，控制台会周期性出现一大段：
+
+```
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-89' coro=<AsyncClient.aclose() ...>>
+RuntimeError: Event loop is closed
+```
+
+**不影响结果**，但会把输出弄脏。根因是**框架的收尾竞态**：
+
+1. ADK 的同步 `runner.run()` 每次调用都会新建并关闭一个事件循环；
+2. `google.genai` 内部的异步 httpx 客户端没能在这个循环内被 `aclose()`；
+3. 循环关闭后，挂起的清理任务才执行 → 抛 `RuntimeError` → asyncio 报
+   "Task exception was never retrieved"。
+
+**修法**：`common/adk.py: quiet_adk_sync_warnings()` 里加了一道精确过滤
+（只丢"message 含 `Task exception was never retrieved` 且含 `Event loop is closed`"
+的那条 asyncio 记录，其它 asyncio 报错照常显示）。
+
+> 踩坑细节：asyncio 这条 record 的 message 是**多行**的
+> （`Task exception was never retrieved\nfuture: ...\nexception: ...`），
+> 所以不能用等号匹配消息，必须用包含判断——第一版就是栽在这里。
+
+**另一条警告不要一起过滤**：
+
+```
+WARNING:google_adk...runners: App "InMemoryRunner" can transfer between agents
+but has no context_cache_config. Every transfer swaps the system instruction and the
+tool set, so the request prefix changes and the whole prompt is re-sent uncached.
+```
+
+这条是**真有信息量**的：它在告诉你"每次转交都会重发整个 prompt、缓存失效"——
+正是多 agent 的成本来源。留着它。
+
+
 ### ① `ValidationError: Unknown scheme for proxy URL URL('socks://127.0.0.1:7897/')`
 
 **现象**：裸 `ChatOpenAI(temperature=0)` 在**构造时**就报 pydantic ValidationError，
