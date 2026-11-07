@@ -51,6 +51,42 @@
 `output_key` 的键名、子 agent 的 `name`、`AgentTool(description=...)` 的描述。
 写错了不会编译报错——这就是第 2、3 章反复出现的那个老问题，在多 agent 里被放大了。
 
+## 补充：agent-as-tool 的两个实操问题
+
+把子 agent 包成 `AgentTool` 后，常被问到的两件事（示例在 `(ADK_Gemini_AgentTool)` 的后两格）：
+
+### ① 子 agent 怎么拿到"特定数据"（session.state）
+
+**子 agent 与父 agent 共用同一个 session**，所以两种方式都可行：
+
+| 方式 | 怎么写 | 机制 | 保真度 |
+|---|---|---|---|
+| **占位符** | 子 agent 的 `instruction` 里写 `{data}` | ADK 发请求前**直接替换** | ✅ 高（原值注入） |
+| **读 state 工具** | 给子 agent 一个用 `ToolContext.state` 的函数工具 | 工具返回值 → **模型再写一遍** | ⚠️ 有失真风险 |
+
+实测：占位符稳定拿到 `机密42`；工具方式出现过模型把 `机密42` 写成 `42`（丢前缀）。
+**要精确传递数据，优先用占位符。**
+
+### ② 主 agent 怎么消费子 agent 返回的字符串
+
+子 agent 的最终文本，会作为 `function_response` 的 `result` 字段回到父 agent：
+
+```python
+function_response.name     # 子 agent 的名字（对父 agent 来说就是工具名）
+function_response.response # {'result': '<子 agent 的最终文本>'}
+```
+
+父 agent 能不能"用好"它，取决于**父的 instruction 有没有写清怎么用**。实测：
+
+```
+[工具返回] SentimentProbe -> {'result': 'SENTIMENT=negative'}
+[主 agent 最终答复] SENTIMENT=negative。对于这次延期给您带来的不便和失望，我们深表歉意；
+                  建议您立即与项目负责人对接……
+```
+
+父 agent 既原样带上了 `SENTIMENT=negative`，又据此补了一句建议——这就是"消费"。
+让子 agent 返回**机器可读的一行**（而不是一段散文），父 agent 才容易稳定使用。
+
 ## 陷阱（本章最该记住的部分）
 
 1. **多 agent ≠ 更好。**
