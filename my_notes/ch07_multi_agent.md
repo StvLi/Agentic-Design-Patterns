@@ -87,6 +87,63 @@ function_response.response # {'result': '<子 agent 的最终文本>'}
 父 agent 既原样带上了 `SENTIMENT=negative`，又据此补了一句建议——这就是"消费"。
 让子 agent 返回**机器可读的一行**（而不是一段散文），父 agent 才容易稳定使用。
 
+## 模式：上层 agent 用 AgentTool 调度下层 LoopAgent
+
+`(ADK_Gemini_Loop)` 最终定型成这个结构：
+
+```
+Supervisor（LlmAgent · 上层）
+   └─ AgentTool(loop)          ← 把整个 LoopAgent 当工具调用
+        └─ LoopAgent [Worker, ConditionChecker]
+```
+
+**为什么这样接**：上层 agent 不需要知道下层是"一个循环"，只知道"我有一个工具可调、调完有返回值"。
+下层的复杂性（几轮、什么条件停、怎么停）完全封在工具后面——**这才是分层该有的样子**。
+
+### 关键实现：让"结束那一轮"主动交出返回值
+
+`AgentTool` 返回的是被包装 agent 的**最终文本**。而 LoopAgent 天然没有"最终文本"——
+它结束时只是 escalate。所以要在 `ConditionChecker` 里把统计和退出信号**一起** yield：
+
+```python
+if s.get("status") == "completed":
+    stats = f"轮次统计: 尝试={s.get('attempts')} 次; 最终状态=completed; 逐轮={s.get('log')}"
+    yield Event(author=self.name,
+                content=types.Content(role="model", parts=[types.Part(text=stats)]),
+                actions=EventActions(escalate=True))     # 文本 + 退出信号
+```
+
+这段文本就成了 loop 的返回值，经 `function_response` 回到上层。
+
+### 实测效果
+
+```
+[下层 loop 的返回值] {'result': "轮次统计: 尝试=3 次; 最终状态=completed;
+                    逐轮=['try#1 NOT_DONE', 'try#2 NOT_DONE', 'try#3 DONE']"}
+[上层 agent 的总结] 本次循环任务共跑了 3 轮。其中，前两轮的状态均为未完成（NOT_DONE），
+                  在第三轮时顺利完成（DONE）。最终任务成功结束。
+```
+
+上层 agent 只做了一件它擅长的事——**把结构化统计写成自然语言**；
+统计本身由代码算（确定性、不花 token）。
+
+### 探索中的两个中间结论
+
+1. **`AgentTool(agent=loop)` 直接可用，但返回值很"薄"**
+   只返回 loop 里**最后一个说话的子 agent** 的文本（如 `'已完成'`），拿不到统计。
+   所以必须让结束那一轮主动"说出"统计。
+
+2. **还有一条等价写法**：`SequentialAgent(sub_agents=[loop, formatter])` 再包 AgentTool。
+   让 formatter 读 state 占位符输出统计。多一个 agent，但不需要改 Checker。
+
+### 三种对接方式（回顾本章的通信方式）
+
+| 方式 | 上层怎么拿数据 | 整合度 | 代价 |
+|---|---|---|---|
+| **消息传递** | Python 拼 JSON 当 user message | 低 | 手工序列化、可能漏字段 |
+| **共享 state** | `SequentialAgent` 串起来 + `{key}` 占位符 | 中 | 只能传 state 里有的；list 会变 repr |
+| **AgentTool（推荐）** | 调工具 → `function_response` 返回 | **高** | 上层无需知道下层内部 |
+
 ## 陷阱（本章最该记住的部分）
 
 1. **多 agent ≠ 更好。**
