@@ -617,6 +617,21 @@ openai SDK 构造 httpx.Client 时【立即】校验所有代理 mount（不是�
 
 1. `socks://` → `socks5://`，无法识别的 scheme 直接剔除
 2. 加载学习用 `.env`（用 setdefault，不覆盖已有变量）
+3. 把**仓库根**（含 `common/` 的目录）插到 `sys.path` 最前
+
+第 3 条是为了让 notebook 能直接 `from common import run_once`。在此之前，
+21 份 notebook 开头都各写一遍「向上找 `common/`」的样板：
+
+```python
+_root = Path.cwd().resolve()
+for _d in (_root, *_root.parents):
+    if (_d / "common").is_dir():
+        sys.path.insert(0, str(_d))
+        break
+```
+
+这段和本章内容毫无关系，纯粹是环境适配。现在由引导负责，notebook 里只剩一行
+注释说明来源（定位靠 `.env` 里的仓库路径候选，见 `_ENV_CANDIDATES`）。
 
 **踩过的弯路 —— 为什么不用 `sitecustomize.py`**：
 Debian 自带 `/usr/lib/python3.12/sitecustomize.py`，而 `/usr/lib/python3.12`
