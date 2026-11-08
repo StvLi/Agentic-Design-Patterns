@@ -24,7 +24,7 @@
 | 4 | Reflection | 3,304 | `Chapter_04_Reflection_(ADK).ipynb`<br>`Chapter_04_Reflection_(Iterative_Loop).ipynb`<br>`Chapter_04_Reflection_(LangChain).ipynb` | ✅ 已精读（三份 notebook 均已适配跑通） |
 | 5 | Tool Use (Function Calling) | 5,069 | `Chapter_05_Tool_Use_(CrewAI).ipynb`<br>`Chapter_05_Tool_Use_(Executing_Code).ipynb`<br>`Chapter_05_Tool_Use_(Google_Search).ipynb`<br>`Chapter_05_Tool_Use_(LangChain).ipynb`<br>`Chapter_05_Tool_Use_(Vertex_AI_Search).ipynb` | 🔵 **复习中**（速通过一轮，现在回来扎实；5 份 notebook 已全部就绪） |
 | 6 | Planning | 2,987 | `Chapter_06_Planning_(Code_Example).ipynb`<br>`Chapter_06_Planning_(Deep_Research_API).ipynb` | 🔵 进行中（CrewAI 版已跑通；Deep Research API 需 OpenAI 权限） |
-| 7 | Multi-Agent Collaboration | 4,182 | `Chapter_07_Multi_Agent_(ADK_Gemini_AgentTool).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Coordinator).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Loop).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Parallel).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Sequential).ipynb`<br>`Chapter_07_Multi_Agent_(CrewAI_Gemini).ipynb` | 🔵 课件就绪（6 份全部跑通） |
+| 7 | Multi-Agent Collaboration | 4,182 | `Chapter_07_Multi_Agent_(ADK_Gemini_AgentTool).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Coordinator).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Loop).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Parallel).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Sequential).ipynb`<br>`Chapter_07_Multi_Agent_(CrewAI_Gemini).ipynb` | ✅ 已精读（6 份全部跑通并逐个过完） |
 | 8 | Memory Management | 5,069 | `Chapter_08_Memory_(ADK_Explicit_State_Update).ipynb`<br>`Chapter_08_Memory_(ADK_LlmAgent_output_key).ipynb`<br>`Chapter_08_Memory_(ADK_MemoryService_InMemory).ipynb`<br>`Chapter_08_Memory_(ADK_SessionService).ipynb`<br>`Chapter_08_Memory_(LangChain_LangGraph).ipynb` | ☐ |
 | 9 | Learning and Adaptation | 3,131 | `Chapter_09_Adaptation_(OpenEvolve).ipynb` | ☐ |
 | 10 | Model Context Protocol (MCP) | 4,315 | `Chapter_10_MCP_(ADK_FastMCP_Server).ipynb`<br>`Chapter_10_MCP_(FastMCP_Client_Agent_init).ipynb`<br>`Chapter_10_MCP_(FastMCP_Server_Example).ipynb`<br>`Chapter_10_MCP_(Filesystem_Example_agent).ipynb`<br>`Chapter_10_MCP_(Filesystem_Example_init).ipynb` | ☐ |
@@ -75,7 +75,7 @@
 | 4 | Reflection | ✅ **已收束** | 导读 + 21 格双后端实验 + 3 份注释版 + 627 行实验记录 | 见下方「第 4 章收束结论」 |
 | 5 | Tool Use | 🔵 **复习中** | 5 份注释版全部就绪（4 份可跑）+ 24 格实验室 + README | 工具三种来源；越内建越难观测 |
 | 6 | Planning | 🔵 **进行中** | 导读 + 两份注释版（Code_Example 已跑通） | 书里的例子是**弱规划**：计划藏在 task 里，不是数据 |
-| 7 | Multi-Agent | 🔵 **课件就绪** | 导读 + 6 份注释版（5 份 ADK + 1 份 CrewAI，全部跑通） | 三种通信方式：共享 state / 转交 / 当成工具调 |
+| 7 | Multi-Agent | ✅ | 导读 + 6 份注释版（全部跑通）+ 协作方式总结 | 通信方式决定一切：共享 state / 转交 / 当工具调；**CrewAI 的 context 是对象引用，比 ADK 的字符串契约强** |
 | 8–21 | — | ☐ | 未开始 | — |
 
 > 每章产出三类文件：**可跑脚本**（`chN_*/book_example.py`）、

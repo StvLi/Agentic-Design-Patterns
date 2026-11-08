@@ -144,6 +144,63 @@ if s.get("status") == "completed":
 | **共享 state** | `SequentialAgent` 串起来 + `{key}` 占位符 | 中 | 只能传 state 里有的；list 会变 repr |
 | **AgentTool（推荐）** | 调工具 → `function_response` 返回 | **高** | 上层无需知道下层内部 |
 
+## 六份脚本涉及的协作方式总结
+
+### 一、逐个对应
+
+| notebook | 书里的形态 | 核心机制 | 数据怎么传 | 契约强度 |
+|---|---|---|---|---|
+| `ADK_Gemini_Sequential` | **Sequential Handoffs** | `SequentialAgent` | `output_key` 写 state + `{key}` 占位符 | 弱（字符串名字） |
+| `ADK_Gemini_Parallel` | **Parallel Processing** | `ParallelAgent` | 各写各的 state key，互不读 | 弱（字符串名字） |
+| `ADK_Gemini_Coordinator` | **Hierarchical** | `sub_agents` + 子 agent 的 `description` | 整个对话转交 | 弱（自然语言） |
+| `ADK_Gemini_AgentTool` | Hierarchical 变体（**agent-as-tool**） | `AgentTool(agent=...)` | `function_response` 返回子 agent 文本 | 弱（工具描述） |
+| `ADK_Gemini_Loop` | 迭代控制流（书里六种没单列） | `LoopAgent` + `escalate` / `max_iterations` | 同上，state 记录进度 | — |
+| `CrewAI_Gemini` | **Expert Teams** | `Agent(role/goal/backstory)` + `Task` + `Crew` | **`context=[上一个 task]`** | **强（对象引用）** |
+
+### 二、覆盖度：书里列了 6 种，代码实现了哪几种
+
+| 书里的形态 | 本章有代码吗 |
+|---|---|
+| Sequential Handoffs | ✅ `(Sequential)` |
+| Parallel Processing | ✅ `(Parallel)` |
+| Hierarchical | ✅ `(Coordinator)` + `(AgentTool)` 两种写法 |
+| Expert Teams | ✅ `(CrewAI)` |
+| Critic-Reviewer | ⚠️ 本章无脚本，但**第 4 章 Reflection 就是它**（生产者 + 批判者） |
+| Debate & Consensus | ❌ 本章没有实现（需要多个 agent 同题作答再收敛） |
+
+### 三、按"调用成本"排
+
+| 形态 | 模型调用次数 | 说明 |
+|---|---|---|
+| CrewAI sequential | **2 次** | task 按顺序直跑，无中间协调者 |
+| ADK Sequential / Parallel | **2 次** | 每个 agent 各 1 次 |
+| ADK AgentTool | **2–3 次** | 父 agent 决策 + 子 agent 干活（+ 可能再组织一次回答） |
+| ADK Coordinator | **3+ 次** | 协调者决策 1 次 + 子 agent 1 次 + 可能汇总 1 次 |
+| ADK Loop | **2 × 轮数** | 每轮 worker + checker；条件不满足就继续烧 |
+
+> 记住这条：**多 agent 的成本不是"加法"，是"上下文重发"**。
+> ADK 转交时每次都会重发整个 prompt（官方 `context_cache_config` 警告说的就是这件事）。
+
+### 四、选型速查
+
+| 你要的效果 | 用哪个 |
+|---|---|
+| 固定顺序，A 的输出给 B | `SequentialAgent`（ADK）或 `Task(context=[...])`（CrewAI） |
+| 几件事互不依赖、要快 | `ParallelAgent` |
+| 让模型按内容动态选人 | `Coordinator`（`sub_agents` + description） |
+| 上层要调用一个"专长"办件小事，拿回结果继续干 | `AgentTool` |
+| 反复尝试直到成功 / 直到条件满足 | `LoopAgent`（`escalate` + `max_iterations`） |
+| 角色分工做内容生产（研究员/作者/编辑） | CrewAI `Agent` + `Task` + `Crew` |
+| 需要多个视角争论出结论 | ❌ 本章无代码，需自己搭 |
+
+### 五、一条贯穿的判断
+
+> **先问"它们之间要不要传数据"，再问"要不要让模型决定传给谁"。**
+> - 要传数据 → 用 state / context（**别用自然语言转交**，那是给不需要数据的情况用的）
+> - 要模型决定 → Coordinator；要写死 → Sequential/CrewAI
+>
+> 两个都要 → 先 state 传数据，外层再用 Coordinator 选人（组合起来）。
+
 ## 陷阱（本章最该记住的部分）
 
 1. **多 agent ≠ 更好。**
