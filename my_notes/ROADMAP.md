@@ -453,6 +453,22 @@ from langchain.agents import create_agent                               # ✅ v1
 **已装依赖**：`ms-python.python`、`ms-toolsai.jupyter`、`ms-python.debugpy 2026.6.0`、
 venv 内 `debugpy 1.8.22` + `ipykernel 7.4.0` —— 调试所需的链路是完整的。
 
+### 共享脚手架（`common/`）
+
+ADK notebook 里原来复制粘贴的东西，现在都在仓库外的 `common/adk.py`：
+
+| 函数 | 用途 |
+|---|---|
+| `adk_model()` | 官方 / 中转站可切的 Gemini 模型对象 |
+| `run_once(agent, msg)` | 跑一次 → `(finals, state)`，最常用 |
+| `run_session(agent, msg)` | 跑一次 → `(finals, session)`，要看 events 时用 |
+| `run_async(coro)` | 线程里跑协程（MemoryService / DatabaseSession 都是 async 接口） |
+| `retry_call(fn)` | 瞬时错误（429/503/TLS 抖动/超时）自动退避重试 |
+| `quiet_adk_sync_warnings()` | 消掉 ADK 同步 API 的弃用提示 + asyncio 收尾噪音 |
+
+> **这些函数内部的 `google.adk` / `google.genai` 都是延迟导入**——主环境没有 ADK，
+> 顶层导入会让 `from common import make_llm` 直接失败。改动这个文件时别破坏这一点。
+
 ### 模型后端
 
 书里所有示例默认 OpenAI / Gemini / Vertex。本学习环境改为 **DeepSeek 官方 API（OpenAI 兼容）**，书里的代码**无需改动**，只是 `base_url` / `model` 不同：
