@@ -16,6 +16,7 @@ notebook（已适配本机：DeepSeek / 中转站 Gemini / 本地 Qwen）。
 | 第 6 章 | [ch06_planning.md](ch06_planning.md) | 计划要成为数据，而不是散文 |
 | 第 7 章 | [ch07_multi_agent.md](ch07_multi_agent.md) | 三种通信方式：共享 state / 转交 / 当成工具调 |
 | 第 7 章 · 补充笔记 | [ch07_notes_communication.md](ch07_notes_communication.md) | 顺序靠串行 await；并行时撞 state key 就是随机 bug |
+| 第 8 章 | [ch08_memory.md](ch08_memory.md) | 短期 Session/State 与长期 Memory 分开；写 state 只有三条路 |
 
 ## 规范与工具文档
 
