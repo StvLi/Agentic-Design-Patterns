@@ -25,8 +25,8 @@
 | 5 | Tool Use (Function Calling) | 5,069 | `Chapter_05_Tool_Use_(CrewAI).ipynb`<br>`Chapter_05_Tool_Use_(Executing_Code).ipynb`<br>`Chapter_05_Tool_Use_(Google_Search).ipynb`<br>`Chapter_05_Tool_Use_(LangChain).ipynb`<br>`Chapter_05_Tool_Use_(Vertex_AI_Search).ipynb` | 🔵 **复习中**（速通过一轮，现在回来扎实；5 份 notebook 已全部就绪） |
 | 6 | Planning | 2,987 | `Chapter_06_Planning_(Code_Example).ipynb`<br>`Chapter_06_Planning_(Deep_Research_API).ipynb` | 🔵 进行中（CrewAI 版已跑通；Deep Research API 需 OpenAI 权限） |
 | 7 | Multi-Agent Collaboration | 4,182 | `Chapter_07_Multi_Agent_(ADK_Gemini_AgentTool).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Coordinator).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Loop).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Parallel).ipynb`<br>`Chapter_07_Multi_Agent_(ADK_Gemini_Sequential).ipynb`<br>`Chapter_07_Multi_Agent_(CrewAI_Gemini).ipynb` | ✅ 已精读（6 份全部跑通并逐个过完） |
-| 8 | Memory Management | 5,069 | `Chapter_08_Memory_(ADK_Explicit_State_Update).ipynb`<br>`Chapter_08_Memory_(ADK_LlmAgent_output_key).ipynb`<br>`Chapter_08_Memory_(ADK_MemoryService_InMemory).ipynb`<br>`Chapter_08_Memory_(ADK_SessionService).ipynb`<br>`Chapter_08_Memory_(LangChain_LangGraph).ipynb` | 🔵 课件就绪（5 份全部跑通） |
-| 9 | Learning and Adaptation | 3,131 | `Chapter_09_Adaptation_(OpenEvolve).ipynb` | ☐ |
+| 8 | Memory Management | 5,069 | `Chapter_08_Memory_(ADK_Explicit_State_Update).ipynb`<br>`Chapter_08_Memory_(ADK_LlmAgent_output_key).ipynb`<br>`Chapter_08_Memory_(ADK_MemoryService_InMemory).ipynb`<br>`Chapter_08_Memory_(ADK_SessionService).ipynb`<br>`Chapter_08_Memory_(LangChain_LangGraph).ipynb` | ✅ 已精读（5 份全部跑通并逐个过完） |
+| 9 | Learning and Adaptation | 3,131 | `Chapter_09_Adaptation_(OpenEvolve).ipynb` | ✅ 已精读（notebook 可跑 + 四权重 20 轮对照） |
 | 10 | Model Context Protocol (MCP) | 4,315 | `Chapter_10_MCP_(ADK_FastMCP_Server).ipynb`<br>`Chapter_10_MCP_(FastMCP_Client_Agent_init).ipynb`<br>`Chapter_10_MCP_(FastMCP_Server_Example).ipynb`<br>`Chapter_10_MCP_(Filesystem_Example_agent).ipynb`<br>`Chapter_10_MCP_(Filesystem_Example_init).ipynb` | ☐ |
 | 11 | Goal Setting and Monitoring | 2,881 | `Chapter_11_Goal_Setting_(Iteration).ipynb` | ☐ |
 | 12 | Exception Handling & Recovery | 1,917 | `Chapter_12_Exception_Handling_(Fallback).ipynb` | ☐ |
@@ -77,7 +77,8 @@
 | 6 | Planning | 🔵 **进行中** | 导读 + 两份注释版（Code_Example 已跑通） | 书里的例子是**弱规划**：计划藏在 task 里，不是数据 |
 | 7 | Multi-Agent | ✅ | 导读 + 6 份注释版（全部跑通）+ 协作方式总结 | 通信方式决定一切：共享 state / 转交 / 当工具调；**CrewAI 的 context 是对象引用，比 ADK 的字符串契约强** |
 | 8 | Memory | ✅ **已收束** | 导读 + 5 份注释版（4 份 ADK + 1 份 LangChain，全部跑通）+ 检索/落盘/速度实测 | 短期 Session/State 与长期 Memory 分开；写 state 只有三条路；**记忆的成败在检索**，`InMemory` 是词匹配不是语义 |
-| 9–21 | — | ☐ | 未开始 | — |
+| 9 | Learning & Adaptation | ✅ **已收束** | 导读 + 可跑三件套 + 四权重 20 轮对照（0.8B/2B/4B/9B）+ DeepSeek 基线 | 生成门槛远低于判断门槛；**评估器的形状决定进化会找到什么** |
+| 10–21 | — | ☐ | 未开始 | — |
 
 > 每章产出三类文件：**可跑脚本**（`chN_*/book_example.py`）、
 > **调试实验室 notebook**（`0N_X_debug_lab.ipynb`）、
